@@ -226,4 +226,31 @@
     buildDots();
     update();
   });
+
+  /* ---------- Lightbox (poster images + YouTube video preview) ---------- */
+  var lb = document.createElement("div");
+  lb.className = "lightbox";
+  lb.setAttribute("role", "dialog");
+  lb.setAttribute("aria-modal", "true");
+  lb.innerHTML = '<button class="lightbox-close" aria-label="關閉"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button><div class="lightbox-body"></div>';
+  document.body.appendChild(lb);
+  var lbBody = lb.querySelector(".lightbox-body");
+  function lbOpen(html){ lbBody.innerHTML = html; lb.classList.add("open"); document.body.style.overflow = "hidden"; }
+  function lbClose(){ lb.classList.remove("open"); document.body.style.overflow = ""; setTimeout(function(){ lbBody.innerHTML = ""; }, 250); }
+  lb.addEventListener("click", function(e){ if(e.target === lb || e.target.closest(".lightbox-close")) lbClose(); });
+  document.addEventListener("keydown", function(e){ if(e.key === "Escape" && lb.classList.contains("open")) lbClose(); });
+  document.addEventListener("click", function(e){
+    var vid = e.target.closest("[data-lightbox-video]");
+    if(vid){
+      e.preventDefault();
+      var id = vid.getAttribute("data-lightbox-video");
+      lbOpen('<div class="lb-video"><iframe src="https://www.youtube-nocookie.com/embed/' + id + '?autoplay=1&rel=0&modestbranding=1" title="影片" allow="autoplay; encrypted-media; fullscreen; picture-in-picture" allowfullscreen></iframe></div>');
+      return;
+    }
+    var img = e.target.closest("[data-lightbox-img]");
+    if(img){
+      e.preventDefault();
+      lbOpen('<img src="' + img.getAttribute("data-lightbox-img") + '" alt="著數優惠" />');
+    }
+  });
 })();
